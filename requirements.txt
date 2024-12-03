@@ -1,9 +1,8 @@
 fastapi~=0.115.5
 uvicorn~=0.32.0
-
-
 passlib~=1.7.4
 pydantic~=2.7.1
 config~=0.5.1
-
 tortoise~=0.1.1
+requests~=2.32.0
+SQLAlchemy~=2.0.36
