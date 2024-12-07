@@ -30,14 +30,13 @@ app.include_router(api_test, prefix="/test", tags=["测试用的接口，后期�
 register_tortoise(
     app,
     config=mysql_config,
-    generate_schemas=True,  # 开发环境可以生成表结构，生产环境建议关闭
+    generate_schemas=False,  # 开发环境可以生成表结构，生产环境建议关闭
     add_exception_handlers=True,  # 显示错误信息
 )
 
 @app.get("/")
 async def root():
     return {"message": "FastAPI启动成功，这是接口！"}
-
 
 
 if __name__ == '__main__':

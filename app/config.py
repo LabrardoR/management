@@ -49,4 +49,6 @@ SERVER_ADDRESS = '115.25.46.212'
 REDIS_PASSWORD = '932384'
 
 
-REDIS_USER_CODE = 'user:code'
+REDIS_USER_REGISTER_CODE = 'user:register:code:'
+REDIS_USER_LOGIN_CODE = 'user:login:code:'
+REDIS_USER_RESET_CODE = 'user:reset:code:'
