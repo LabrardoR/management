@@ -133,10 +133,7 @@ async def reset(user_reset : UserReset):
     user = await User.filter(phone = phone).first()
     if user is None:
         raise HTTPException(status_code=400, detail="账号不存在，请先注册！") #
-
     await check_code(code, phone, REDIS_USER_RESET_CODE)
-
-
     # 更新密码
     user = await User.filter(phone = phone).update(password = md5(password))
 
