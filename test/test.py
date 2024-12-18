@@ -53,6 +53,8 @@
 #
 
 import os
+import time
+
 
 def get_file_list(directory):
     try:
@@ -65,10 +67,6 @@ def get_file_list(directory):
         print(f"Error reading directory: {e}")
         return []
 
-# 示例用法
-directory = "./audio"  # 指定目录
-file_list = get_file_list(directory)
-print("文件列表:", file_list)
 
 if __name__ == '__main__':
-    get_file_list("./audio")
+    print(int(time.time()))

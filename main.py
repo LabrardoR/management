@@ -1,27 +1,29 @@
-from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from app.api.ai_work_group import api_ai_work_group
 from app.api.upload import api_upload
 from app.api.work import api_work
 from app.api.user import api_user
 from tortoise.contrib.fastapi import register_tortoise
-from app.api.api_test import api_test
 # web 服务器
 import uvicorn
-from typing import Generator
-from app.api.user_consultation import api_consultation
 from app.config import mysql_config, SERVER_PORT
-from redis import StrictRedis
 import os
-
+from fastapi.middleware.cors import CORSMiddleware
 
 # 使用 lifespan 事件处理器
 # 创建 FastAPI 应用并传入 lifespan 事件处理器
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 允许所有来源
+    allow_credentials=True,
+    allow_methods=["*"],  # 允许所有方法
+    allow_headers=["*"],  # 允许所有头
+)
+
 
 # 确保音频和视频目录存在
 if not os.path.exists("audio"):

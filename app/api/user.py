@@ -1,6 +1,5 @@
 
 from fastapi import APIRouter, HTTPException, Depends, Request, Response
-from sqlalchemy.sql.functions import current_user
 from tortoise.exceptions import IntegrityError
 from tortoise.expressions import Q
 from app.models.user import User

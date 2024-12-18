@@ -12,9 +12,9 @@ api_work = APIRouter()
 async def make_digital(file_name : str, token : str = Depends(get_access_token)):
     print("token:" + token)
     # todo 获取视频链接
-    VIDEO_URL = SERVER_ADDRESS + ":" + str(SERVER_PORT) + "/video/" + file_name
-    VIDEO_URL_TEST = "https://fyztagi.com/assets/video-eg2-DQhBVWBb.mp4"
-    trainingId = await get_training_id(VIDEO_URL_TEST, file_name, token)
+    VIDEO_URL = "http://" + SERVER_ADDRESS + ":" + str(SERVER_PORT) + "/video/" + file_name
+    print("VIDEO_URL" + VIDEO_URL)
+    trainingId = await get_training_id(VIDEO_URL, file_name, token)
     print("trainingId:" + str(trainingId))
     data = await get_scene_id(trainingId, token)
     return data
@@ -26,10 +26,10 @@ async def get_scene_id_again(trainingId, token : str = Depends(get_access_token)
 
 @api_work.post("/make_video", description="AI生成视频")
 async def make_video(audio_name : str, scene_id : int, token : str = Depends(get_access_token)):
-    # todo 换成AUDIO_URL
-    AUDIO_URL = SERVER_ADDRESS + ":" + str(SERVER_PORT) + "/audio/" + audio_name
-    AUDIO_URL_TEST = "https://uy.wzznft.com/i/2024/12/17/ncbsoi.mp3"
-    videoId = await get_video_id(AUDIO_URL_TEST, scene_id, token)
+    # 换成AUDIO_URL
+    AUDIO_URL = "http://" + SERVER_ADDRESS + ":" + str(SERVER_PORT) + "/audio/" + audio_name
+    print("AUDIO_URL" + AUDIO_URL)
+    videoId = await get_video_id(AUDIO_URL, scene_id, token)
     print("videoId" + str(videoId))
     data = await get_download_url(videoId, token)
     return data

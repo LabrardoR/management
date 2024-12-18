@@ -1,3 +1,7 @@
+# 服务器公网 IP
+SERVER_ADDRESS = '103.229.54.221'
+SERVER_PORT = 8000
+
 mysql_config = {
         'connections': {
             'default': {
@@ -28,25 +32,6 @@ AccessKey = "69wCg6iKHMGlcULLGahXIQT3"
 Secretkey = "XfYmmoZTbBOR3PPThzdpk6XKMgz8hSUMvnMBM2UtEKI9lVRfw8KLynloXo72Amjo"
 
 
-
-# import aioredis
-# from fastapi import FastAPI
-#
-# # 全局 Redis 连接对象
-# redis = None
-#
-# async def init_redis():
-#     global redis
-#     redis = await aioredis.from_url("redis://localhost:6379", decode_responses=True)
-#
-# async def close_redis():
-#     global redis
-#     if redis:
-#         await redis.clone()
-
-# 服务器公网 IP
-SERVER_ADDRESS = '115.25.46.212'
-SERVER_PORT = 8000
 
 REDIS_PASSWORD = '932384'
 
