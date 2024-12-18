@@ -15,12 +15,19 @@ from typing import Generator
 from app.api.user_consultation import api_consultation
 from app.config import mysql_config, SERVER_PORT
 from redis import StrictRedis
+import os
 
 
 # 使用 lifespan 事件处理器
 # 创建 FastAPI 应用并传入 lifespan 事件处理器
 
 app = FastAPI()
+
+# 确保音频和视频目录存在
+if not os.path.exists("audio"):
+    os.makedirs("audio")
+if not os.path.exists("video"):
+    os.makedirs("video")
 
 app.mount('/audio', StaticFiles(directory="audio"), '音频')
 app.mount('/video', StaticFiles(directory="video"), '视频')

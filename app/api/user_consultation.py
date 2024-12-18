@@ -2,7 +2,6 @@
 客户咨询接口
 """
 from fastapi import APIRouter, HTTPException, Depends, Request, Response
-from tensorflow.python.distribute.device_util import current
 from tortoise.exceptions import IntegrityError
 
 import hashlib
