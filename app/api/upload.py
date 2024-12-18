@@ -4,6 +4,7 @@
 import os
 
 from app.models.user import User
+from app.utils.json_web_token import decode_jwt
 from app.utils.user import get_current_user
 from fastapi import APIRouter, HTTPException, Depends, Request, Response, UploadFile, File, HTTPException
 from tortoise.exceptions import IntegrityError
@@ -12,14 +13,17 @@ import time
 
 api_upload = APIRouter()
 
-@api_upload.post("/audio", description="上传音频文件")
-async def upload_audio(request : Request, current_user : User = Depends(get_current_user), file: UploadFile = File(...)):
+@api_upload.post("/audio/{token}", description="上传音频文件")
+async def upload_audio(token : str, file: UploadFile = File(...)):
+    data = await decode_jwt(token)
     AUDIO_DIR = "./audio"
     if not os.path.exists(AUDIO_DIR):
         os.makedirs(AUDIO_DIR)
 
+    phone = data.get("phone")
+
     # 重命名文件
-    new_name = f"{current_user.phone}_{int(time.time())}.mp3"  # 新文件名
+    new_name = f"{phone}_{int(time.time())}.mp3"  # 新文件名
 
     # 保存文件到指定目录
     file_path = await save_file(file, AUDIO_DIR, new_name)
@@ -33,14 +37,17 @@ async def upload_audio(request : Request, current_user : User = Depends(get_curr
         raise HTTPException(status_code=400, detail="上传音频失败")
 
 
-@api_upload.post("/video", description="上传视频文件")
-async def upload_video(request : Request, current_user : User = Depends(get_current_user), file: UploadFile = File(...)):
+@api_upload.post("/video/{token}", description="上传视频文件")
+async def upload_video(token : str, file: UploadFile = File(...)):
+    data = await decode_jwt(token)
     VIDEO_DIR = "./video"
     if not os.path.exists(VIDEO_DIR):
         os.makedirs(VIDEO_DIR)
 
+    phone = data.get("phone")
+
      # 重命名文件
-    new_name = f"{current_user.phone}_{int(time.time())}.mp4"  # 新文件名
+    new_name = f"{phone}_{int(time.time())}.mp4"  # 新文件名
 
     # 保存文件到指定目录
     file_path = await save_file(file, VIDEO_DIR, new_name)

@@ -8,7 +8,7 @@ from app.utils.metaverse import get_access_token, get_training_id, get_scene_id,
 
 api_work = APIRouter()
 
-@api_work.post("/make/{video_name}", description="制作数字人")
+@api_work.post("/make/{token}/{video_name}", description="制作数字人")
 async def make_digital(file_name : str, token : str = Depends(get_access_token)):
     print("token:" + token)
     # todo 获取视频链接

@@ -1,9 +1,11 @@
 
 from fastapi import APIRouter, HTTPException, Depends, Request, Response
+from sqlalchemy.sql.functions import current_user
 from tortoise.exceptions import IntegrityError
 from tortoise.expressions import Q
 from app.models.user import User
 from app.schemas.user import UserRegister, UserCodeLogin, UserPasswordLogin, UserReset, UserResponse, UserUpdate
+from app.utils.json_web_token import create_jwt, decode_jwt
 from app.utils.redis import get_redis
 from app.utils.user import get_current_user, get_code, check_code
 from app.config import REDIS_USER_REGISTER_CODE, REDIS_USER_LOGIN_CODE, REDIS_USER_RESET_CODE
@@ -111,10 +113,9 @@ async def login(user_login: UserPasswordLogin, response: Response):
     if user.password != md5(password):
         raise HTTPException(status_code=400, detail="账号或密码错误！")
 
-    # 生成 session 信息并设置 Cookie
-    session_id = f"session_{user.id}"  # 可使用更复杂的生成逻辑
-    response.set_cookie(key="session_id", value=session_id, httponly=True, max_age=3600)
-    return {"message": "登录成功", "用户ID": user.id}
+    token = await create_jwt(user)
+
+    return {"message": "登录成功", "token": token}
 
 @api_user.post("/reset_password", description="手机号找回（重置）密码")
 async def reset(user_reset : UserReset):
@@ -138,13 +139,13 @@ async def reset(user_reset : UserReset):
     return {"message": "找回密码成功", "phone" : phone}
 
 
-@api_user.get("/profile", description="获取当前用户")
-async def profile(current_user: User = Depends(get_current_user)):
-    current_user.password = ""
-    return current_user
+@api_user.get("/profile/{token}", description="获取当前用户")
+async def profile(token : str):
+    data = await decode_jwt(token)
+    return data
 
-@api_user.post("/update", description="修改用户信息")
-async def update_user(request : Request, user_update: UserUpdate, current_user: User = Depends(get_current_user)):
+@api_user.post("/update/{token}", description="修改用户信息")
+async def update_user(token : str, user_update: UserUpdate):
     """
     修改用户信息接口：
     1. 普通用户只能修改自己的信息。
@@ -158,6 +159,8 @@ async def update_user(request : Request, user_update: UserUpdate, current_user: 
     gender: Optional[int] = None
     email: Optional[str] = None
     """
+    data = await decode_jwt(token)
+
     username = user_update.username
     phone = user_update.phone
     password = user_update.password
@@ -167,9 +170,10 @@ async def update_user(request : Request, user_update: UserUpdate, current_user: 
     if user_update.id is None:
         raise HTTPException(status_code=400, detail="信息有误")
 
+
     # 验证权限：普通用户只能修改自己的信息
-    if current_user.role != 9:  # 如果当前用户不是管理员
-        if user_update.id != current_user.id:
+    if data.role != 9:  # 如果当前用户不是管理员
+        if user_update.id != data.id:
             raise HTTPException(status_code=403, detail="没有权限修改其他用户的信息")
 
     # 查找原用户
@@ -190,7 +194,7 @@ async def update_user(request : Request, user_update: UserUpdate, current_user: 
 
     # 更新数据库
     await User.filter(id = user_update.id).update(phone = user_update.phone, username = username, password = md5(user_update.password), gender = user_update.gender, email = user_update.email)
-    updated_user = await get_current_user(request)
+    updated_user = await User.filter(id = user_update.id).update(phone = user_update.phone)
     return {
         "message": "用户信息更新成功！",
         "user": updated_user
@@ -202,32 +206,32 @@ async def logout(response: Response):
     response.delete_cookie("session_id")
     return {"message": "注销成功"}
 
-@api_user.get("/query_all", description="查询全部用户")
-async def query_all_user(current_user: User = Depends(get_current_user)):
-    if current_user.role != 9:
-        raise HTTPException(status_code=403, detail="无管理员权限！")
-    user_list = await User.filter().all()
+# @api_user.get("/query_all", description="查询全部用户")
+# async def query_all_user():
+#     if current_user.role != 9:
+#         raise HTTPException(status_code=403, detail="无管理员权限！")
+#     user_list = await User.filter().all()
+#
+#     # 通过 Pydantic 模型返回精简后的字段
+#     return [
+#         UserResponse(
+#             id=user.id,
+#             account=user.account,
+#             username = user.username,
+#             password = "",
+#             phone=user.phone,
+#             points=user.points,
+#             gender=user.gender,
+#             email=user.email,
+#             role=user.role,
+#         )
+#         for user in user_list
+#     ]
 
-    # 通过 Pydantic 模型返回精简后的字段
-    return [
-        UserResponse(
-            id=user.id,
-            account=user.account,
-            username = user.username,
-            password = "",
-            phone=user.phone,
-            points=user.points,
-            gender=user.gender,
-            email=user.email,
-            role=user.role,
-        )
-        for user in user_list
-    ]
-
-@api_user.get("/get_video_list")
-async def get_video_list():
-
-    return
+# @api_user.get("/get_video_list")
+# async def get_video_list():
+#
+#     return
 
 def md5(s):
     s = s.encode("utf8")

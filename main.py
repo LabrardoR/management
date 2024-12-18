@@ -16,13 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # 允许所有来源
-    allow_credentials=True,
-    allow_methods=["*"],  # 允许所有方法
-    allow_headers=["*"],  # 允许所有头
-)
+
 
 
 # 确保音频和视频目录存在
@@ -39,6 +33,13 @@ app.include_router(api_user, prefix="/user", tags=["用户接口"])
 app.include_router(api_work, prefix="/work", tags=["我的作品接口"])
 app.include_router(api_upload, prefix="/upload", tags=["上传文件接口"])
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 允许所有来源
+    allow_credentials=True,
+    allow_methods=["*"],  # 允许所有方法
+    allow_headers=["*"],  # 允许所有头
+)
 
 # 初始化 Tortoise ORM
 register_tortoise(
@@ -54,4 +55,4 @@ async def root():
 
 
 if __name__ == '__main__':
-    uvicorn.run("main:app", host="0.0.0.0", port=SERVER_PORT, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=SERVER_PORT, reload=True)
