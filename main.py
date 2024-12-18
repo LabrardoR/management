@@ -1,9 +1,11 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from app.api.ai_work_group import api_ai_work_group
-from app.api.my_digital_person import api_my_digital_person
+from app.api.upload import api_upload
+from app.api.work import api_work
 from app.api.user import api_user
 from tortoise.contrib.fastapi import register_tortoise
 from app.api.api_test import api_test
@@ -11,20 +13,23 @@ from app.api.api_test import api_test
 import uvicorn
 from typing import Generator
 from app.api.user_consultation import api_consultation
-from app.config import mysql_config
+from app.config import mysql_config, SERVER_PORT
 from redis import StrictRedis
 
 
-
 # 使用 lifespan 事件处理器
-
 # 创建 FastAPI 应用并传入 lifespan 事件处理器
 
 app = FastAPI()
-app.include_router(api_user, prefix="/user", tags=["用户接口", ])
-app.include_router(api_ai_work_group, prefix = "/ai_work_group", tags=["AI工作组接口", ])
-app.include_router(api_consultation, prefix = "/form", tags=["用户咨询接口",])
-app.include_router(api_test, prefix="/test", tags=["测试用的接口，后期会删除",])
+
+app.mount('/audio', StaticFiles(directory="audio"), '音频')
+app.mount('/video', StaticFiles(directory="video"), '视频')
+
+app.include_router(api_user, prefix="/user", tags=["用户接口"])
+
+app.include_router(api_work, prefix="/work", tags=["我的作品接口"])
+app.include_router(api_upload, prefix="/upload", tags=["上传文件接口"])
+
 
 # 初始化 Tortoise ORM
 register_tortoise(
@@ -40,4 +45,4 @@ async def root():
 
 
 if __name__ == '__main__':
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=SERVER_PORT, reload=True)

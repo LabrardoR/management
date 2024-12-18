@@ -44,7 +44,9 @@ Secretkey = "XfYmmoZTbBOR3PPThzdpk6XKMgz8hSUMvnMBM2UtEKI9lVRfw8KLynloXo72Amjo"
 #     if redis:
 #         await redis.clone()
 
+# 服务器公网 IP
 SERVER_ADDRESS = '115.25.46.212'
+SERVER_PORT = 8000
 
 REDIS_PASSWORD = '932384'
 

@@ -1,9 +1,8 @@
 
 from fastapi import APIRouter, HTTPException, Depends, Request, Response
-from tensorflow.python.keras.backend import update
+from sqlalchemy.sql.functions import current_user
 from tortoise.exceptions import IntegrityError
 from tortoise.expressions import Q
-
 from app.models.user import User
 from app.schemas.user import UserRegister, UserCodeLogin, UserPasswordLogin, UserReset, UserResponse, UserUpdate
 from app.utils.redis import get_redis
@@ -226,17 +225,10 @@ async def query_all_user(current_user: User = Depends(get_current_user)):
         for user in user_list
     ]
 
+@api_user.get("/get_video_list")
+async def get_video_list():
 
-# todo
-# @api_user.delete("/delete/{user_id}", description="删除用户(逻辑删除)")
-# async def update_user(user_id, current_user: User = Depends(get_current_user)):
-#     # if user_id == current_user.id:
-#     #     return
-#     #
-#     # if current_user.role != 1:
-#     #     raise HTTPException(status_code=401, detail="无权限！")
-#
-#     return "删除用户未完成"
+    return
 
 def md5(s):
     s = s.encode("utf8")
