@@ -8,11 +8,11 @@ mysql_config = {
                 # 'engine': tortoise.backends.asyncpg, # PostgreSQL
                 'engine': 'tortoise.backends.mysql', # MySQL or Mariadb
                 'credentials': {
-                    'host': '115.25.46.212',
-                    'port': '3306',
-                    'user': 'head',
-                    'password': 'headhead',
-                    'database': 'manage_system',
+                    'host': SERVER_ADDRESS,
+                    'port': '33060',
+                    'user': 'root',
+                    'password': '932384',
+                    'database': 'fyzt',
                 }
             },
         },

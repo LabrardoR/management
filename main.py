@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from app.api.my_voice import api_my_voice
 from app.api.upload import api_upload
 from app.api.work import api_work
 from app.api.user import api_user
@@ -32,6 +33,7 @@ app.include_router(api_user, prefix="/user", tags=["用户接口"])
 
 app.include_router(api_work, prefix="/work", tags=["我的作品接口"])
 app.include_router(api_upload, prefix="/upload", tags=["上传文件接口"])
+app.include_router(api_my_voice,prefix="/my_voice",tags=["我的声音接口"])
 
 app.add_middleware(
     CORSMiddleware,
