@@ -15,6 +15,8 @@ api_upload = APIRouter()
 @api_upload.post("/audio", description="上传音频文件")
 async def upload_audio(file: UploadFile = File(...)):
     AUDIO_DIR = "./audio"
+    if not os.path.exists(AUDIO_DIR):
+        os.makedirs(AUDIO_DIR)
     # 保存文件到指定目录
     file_path = await save_file(file, AUDIO_DIR)
 
@@ -30,6 +32,8 @@ async def upload_audio(file: UploadFile = File(...)):
 @api_upload.post("/video", description="上传视频文件")
 async def upload_video(file: UploadFile = File(...)):
     VIDEO_DIR = "./video"
+    if not os.path.exists(VIDEO_DIR):
+        os.makedirs(VIDEO_DIR)
     # 保存文件到指定目录
     file_path = await save_file(file, VIDEO_DIR)
 
